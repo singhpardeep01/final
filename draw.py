@@ -5,32 +5,8 @@ from gmath import *
 
 
 def scanline_convert(matrix, point, screen, zbuffer):
-    color = [120, 120, 120]
-    if matrix[point][1] > matrix[point+1][1] and matrix[point][1] > matrix[point+2][1]:
-        top = matrix[point]
-        if matrix[point+1][1] > matrix[point+2][1]:
-            middle = matrix[point+1]
-            bottom = matrix[point+2]
-        else:
-            middle = matrix[point+2]
-            bottom = matrix[point+1]
-    elif matrix[point+1][1] > matrix[point][1] and matrix[point+1][1] > matrix[point+2][1]:
-        top = matrix[point+1]
-        if matrix[point][1] > matrix[point+2][1]:
-            middle = matrix[point]
-            bottom = matrix[point+2]
-        else:
-            middle = matrix[point+2]
-            bottom = matrix[point]
-    elif matrix[point+2][1] > matrix[point][1] and matrix[point+2][1] > matrix[point+1][1]:
-        top = matrix[point+2]
-        if matrix[point][1] > matrix[point+1][1]:
-            middle = matrix[point]
-            bottom = matrix[point+1]
-        else:
-            middle = matrix[point+1]
-            bottom = matrix[point]
-    elif matrix[point][1] == matrix[point+1][1]:
+    color = [190, 190, 190]
+    if matrix[point][1] == matrix[point+1][1]:
         if matrix[point][1] > matrix[point+2][1]:
             top = matrix[point]
             middle = matrix[point+1]
@@ -57,38 +33,51 @@ def scanline_convert(matrix, point, screen, zbuffer):
             top = matrix[point]
             middle = matrix[point+2]
             bottom = matrix[point+1]
-        
+    elif matrix[point][1] > matrix[point+1][1] and matrix[point][1] > matrix[point+2][1]:
+        top = matrix[point]
+        if matrix[point+1][1] > matrix[point+2][1]:
+            middle = matrix[point+1]
+            bottom = matrix[point+2]
+        else:
+            middle = matrix[point+2]
+            bottom = matrix[point+1]
+    elif matrix[point+1][1] > matrix[point][1] and matrix[point+1][1] > matrix[point+2][1]:
+        top = matrix[point+1]
+        if matrix[point][1] > matrix[point+2][1]:
+            middle = matrix[point]
+            bottom = matrix[point+2]
+        else:
+            middle = matrix[point+2]
+            bottom = matrix[point]
+    elif matrix[point+2][1] > matrix[point][1] and matrix[point+2][1] > matrix[point+1][1]:
+        top = matrix[point+2]
+        if matrix[point][1] > matrix[point+1][1]:
+            middle = matrix[point]
+            bottom = matrix[point+1]
+        else:
+            middle = matrix[point+1]
+            bottom = matrix[point]
+    
     cx0t = top[0] - bottom[0]
     cx0b = top[1] - bottom[1]
     cx1ta = middle[0] - bottom[0]
     cx1ba = middle[1] - bottom[1]
     cx1tb = top[0] - middle[0]
     cx1bb = top[1] - middle[1]
-    cx1TF = False
     if cx0b == 0:
         print "not a polygon"
     else:
-        cx0 = (cx0t + 0.0) / cx0b
         y = bottom[1]
-        x0 = bottom[0]
-        if cx1ba != 0:
-            cx1 = (cx1ta + 0.0) / cx1ba
-            x1 = bottom[0]
-            if cx1bb != 0 :
-                cx1b = (cx1tb + 0.0) / cx1bb
-            else:
-                cx1TF = True      
-        else:
-            cx1 = (cx1tb + 0.0) / cx1bb
-            cx1TF = True
-            x1 = middle[0]
-        while y <= top[1]:
-            if cx1TF == False:
-                cx1 = cx1b
+        while y < middle[1]:
+            x0 = bottom[0] + (y - bottom[1]) * cx0t / cx0b 
+            x1 = bottom[0] + (y - bottom[1]) * cx1ta / cx1ba
             draw_line(int(x0), int(y), 0, int(x1), int(y), 0, screen, zbuffer, color)
-            x0 += cx0
-            x1 += cx1
-            y += 1
+            y+=1
+        while y < top[1]:
+            x0 = bottom[0] + (y - bottom[1]) * cx0t / cx0b 
+            x1 = middle[0] + (y - middle[1]) * cx1tb / cx1bb
+            draw_line(int(x0), int(y), 0, int(x1), int(y), 0, screen, zbuffer, color)
+            y+=1
     pass
 
 
