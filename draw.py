@@ -64,6 +64,12 @@ def scanline_convert(matrix, point, screen, zbuffer):
     cx1ba = middle[1] - bottom[1]
     cx1tb = top[0] - middle[0]
     cx1bb = top[1] - middle[1]
+    cz0t = top[2] - bottom[2]
+    cz0b = top[1] - bottom[1]
+    cz1ta = middle[2] - bottom[2]
+    cz1ba = middle[1] - bottom[1]
+    cz1tb = top[2] - middle[2]
+    cz1bb = top[1] - middle[1]
     if cx0b == 0:
         print "not a polygon"
     else:
@@ -71,12 +77,16 @@ def scanline_convert(matrix, point, screen, zbuffer):
         while y < middle[1]:
             x0 = bottom[0] + (y - bottom[1]) * cx0t / cx0b 
             x1 = bottom[0] + (y - bottom[1]) * cx1ta / cx1ba
-            draw_line(int(x0), int(y), 0, int(x1), int(y), 0, screen, zbuffer, color)
+            z0 = bottom[2] + (y - bottom[1]) * cz0t / cz0b 
+            z1 = bottom[2] + (y - bottom[1]) * cz1ta / cz1ba
+            draw_line(int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color)
             y+=1
         while y < top[1]:
             x0 = bottom[0] + (y - bottom[1]) * cx0t / cx0b 
             x1 = middle[0] + (y - middle[1]) * cx1tb / cx1bb
-            draw_line(int(x0), int(y), 0, int(x1), int(y), 0, screen, zbuffer, color)
+            z0 = bottom[2] + (y - bottom[1]) * cz0t / cz0b 
+            z1 = middle[2] + (y - middle[1]) * cz1tb / cz1bb
+            draw_line(int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color)
             y+=1
     pass
 
@@ -100,24 +110,24 @@ def draw_polygons( matrix, screen, zbuffer, color ):
             scanline_convert(matrix, point, screen, zbuffer)            
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
-                       matrix[point][2],
+                       int(matrix[point][2]),
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
-                       matrix[point+1][2],
+                       int(matrix[point+1][2]),
                        screen, zbuffer, color)
             draw_line( int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
-                       matrix[point+2][2],
+                       int(matrix[point+2][2]),
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
-                       matrix[point+1][2],
+                       int(matrix[point+1][2]),
                        screen, zbuffer, color)
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
-                       matrix[point][2],
+                       int(matrix[point][2]),
                        int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
-                       matrix[point+2][2],
+                       int(matrix[point+2][2]),
                        screen, zbuffer, color)    
         point+= 3
 
