@@ -356,6 +356,7 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
     z = z0
     A = 2 * (y1 - y0)
     B = -2 * (x1 - x0)
+    M = z1 - z0
     wide = False
     tall = False
 
