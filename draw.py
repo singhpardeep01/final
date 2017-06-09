@@ -5,7 +5,7 @@ from gmath import *
 
 
 def scanline_convert(matrix, point, screen, zbuffer):
-    color = [190, 190, 190]
+    color = [130, 130, 130]
     if matrix[point][1] == matrix[point+1][1]:
         if matrix[point][1] > matrix[point+2][1]:
             top = matrix[point]
@@ -79,14 +79,14 @@ def scanline_convert(matrix, point, screen, zbuffer):
             x1 = bottom[0] + (y - bottom[1]) * cx1ta / cx1ba
             z0 = bottom[2] + (y - bottom[1]) * cz0t / cz0b 
             z1 = bottom[2] + (y - bottom[1]) * cz1ta / cz1ba
-            draw_line(int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color)
+            draw_line(int(x0), int(y), z0, int(x1), int(y), z1, screen, zbuffer, color)
             y+=1
         while y < top[1]:
             x0 = bottom[0] + (y - bottom[1]) * cx0t / cx0b 
             x1 = middle[0] + (y - middle[1]) * cx1tb / cx1bb
             z0 = bottom[2] + (y - bottom[1]) * cz0t / cz0b 
             z1 = middle[2] + (y - middle[1]) * cz1tb / cz1bb
-            draw_line(int(x0), int(y), int(z0), int(x1), int(y), int(z1), screen, zbuffer, color)
+            draw_line(int(x0), int(y), z0, int(x1), int(y), z1, screen, zbuffer, color)
             y+=1
     pass
 
@@ -110,24 +110,24 @@ def draw_polygons( matrix, screen, zbuffer, color ):
             scanline_convert(matrix, point, screen, zbuffer)            
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
-                       matrix[point][2],
+                       matrix[point][2]+1,
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
-                       matrix[point+1][2],
+                       matrix[point+1][2]+1,
                        screen, zbuffer, color)
             draw_line( int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
-                       matrix[point+2][2],
+                       matrix[point+2][2]+1,
                        int(matrix[point+1][0]),
                        int(matrix[point+1][1]),
-                       matrix[point+1][2],
+                       matrix[point+1][2]+1,
                        screen, zbuffer, color)
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
-                       matrix[point][2],
+                       matrix[point][2]+1,
                        int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
-                       matrix[point+2][2],
+                       matrix[point+2][2]+1,
                        screen, zbuffer, color)    
         point+= 3
 
@@ -398,6 +398,7 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
             loop_end = y
 
     while ( loop_start < loop_end ):
+        dz = M / distance
         plot( screen, zbuffer, color, x, y, z )
         if ( (wide and ((A > 0 and d > 0) or (A < 0 and d < 0))) or
              (tall and ((A > 0 and d < 0) or (A < 0 and d > 0 )))):
@@ -408,6 +409,7 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
             x+= dx_east
             y+= dy_east
             d+= d_east
+        z += dz
         loop_start+= 1
 
     plot( screen, zbuffer, color, x, y, z )
